@@ -56,28 +56,28 @@ const BOUNDS = 120;
  */
 class Planet {
   constructor(meanLongitude, period, angularSpeed, eccentricity) {
-		/**
+    /**
      * Location around the sun in degrees
      * 
      * @type  {number}
      */
     this.meanLongitude = meanLongitude;
 
-		/**
+    /**
      * Orbital period in days
      * 
      * @type  {number}
      */
     this.period = period;
 
-		/**
+    /**
      * Speed around in the sun (in degrees?)
      * 
      * @type  {number}
      */
     this.angularSpeed = angularSpeed;
 
-		/**
+    /**
      * Eccentricity of planets elipitical orbit
      * 
      * @type  {number}
@@ -85,7 +85,7 @@ class Planet {
     this.eccentricity = eccentricity;
   }
 
-	/**
+  /**
    * Converts orbital period from days to years
    * 
    * @return  {number}
@@ -94,7 +94,7 @@ class Planet {
     return this.period / YRS;
   }
 
-	/**
+  /**
    * Gets astronomical units from orbital period
    * 
    * @return  {number}
