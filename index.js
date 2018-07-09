@@ -88,7 +88,8 @@ class Planet {
   }
 
   /**
-   * Gets astronomical units from orbital period
+   * Gets astronomical units from orbital period using Kepler's third law of 
+   * planetary motion (`P^2 = a^3`)
    * 
    * @return  {number}
    */
