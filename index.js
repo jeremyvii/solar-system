@@ -55,7 +55,7 @@ const BOUNDS = 120;
  * Represents a planets location and orbital properties
  */
 class Planet {
-  constructor(meanLongitude, period, angularSpeed, eccentricity) {
+  constructor(meanLongitude, period, eccentricity) {
     /**
      * Location around the sun in degrees
      * 
@@ -69,13 +69,6 @@ class Planet {
      * @type  {number}
      */
     this.period = period;
-
-    /**
-     * Speed around in the sun (in degrees?)
-     * 
-     * @type  {number}
-     */
-    this.angularSpeed = angularSpeed;
 
     /**
      * Eccentricity of planets elipitical orbit
@@ -102,18 +95,27 @@ class Planet {
   get au() {
     return Math.cbrt(Math.pow(this.years, 2));
   }
+
+  /**
+   * Speed around in the sun (in degrees?)
+   * 
+   * @type  {number}
+   */
+  get angularSpeed() {
+    return 360 / this.period;
+  }
 }
 
 /**
  * Key/value sequence of planets in our wonderous solar system
  */
 const planets = {
-  mercury: new Planet(250.2, 87.969,  4.09235, 0.2056),
-  venus:   new Planet(181.2, 224.701, 1.60213, 0.0068),
-  earth:   new Planet(100.0, 365.256, 0.98561, 0.0167),
-  mars:    new Planet(355.2, 686.98,  0.52403, 0.0934),
-  jupiter: new Planet(34.3,  4332.59, 0.08309, 0.0485),
-  saturn:  new Planet(50.1,  10759.2, 0.03346, 0.0555),
+  mercury: new Planet(250.2, 87.969,  0.2056),
+  venus:   new Planet(181.2, 224.701, 0.0068),
+  earth:   new Planet(100.0, 365.256, 0.0167),
+  mars:    new Planet(355.2, 686.98,  0.0934),
+  jupiter: new Planet(34.3,  4332.59, 0.0485),
+  saturn:  new Planet(50.1,  10759.2, 0.0555),
 };
 
 // Reference date that relates to our starting values
@@ -149,13 +151,13 @@ const planetAt = (planetStr, date) => {
 
 Array.from(Object.keys(planets)).forEach(planet => {
   // console.log(`heliopause: `);
-  console.log(planet + ': ' + planetAt(planet, (function() {
-    const today = new Date();
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1;
-    let yyyy = today.getFullYear();
-    if (dd < 10) dd = '0' + dd;
-    if (mm < 10) mm = '0' + mm;
-    return `${mm}/${dd}/${yyyy}`;
-  })()));
+  // console.log(planet + ': ' + planetAt(planet, (function() {
+  //   const today = new Date();
+  //   let dd = today.getDate();
+  //   let mm = today.getMonth() + 1;
+  //   let yyyy = today.getFullYear();
+  //   if (dd < 10) dd = '0' + dd;
+  //   if (mm < 10) mm = '0' + mm;
+  //   return `${mm}/${dd}/${yyyy}`;
+  // })()));
 });
