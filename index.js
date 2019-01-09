@@ -71,7 +71,7 @@ class Planet {
     this.period = period;
 
     /**
-     * Eccentricity of planets elipitical orbit
+     * Eccentricity of planets elliptical orbit
      *
      * @type  {number}
      */
@@ -108,7 +108,7 @@ class Planet {
 }
 
 /**
- * Key/value sequence of planets in our wonderous solar system
+ * Key/value sequence of planets in our wondrous solar system
  */
 const planets = {
   mercury: new Planet(250.2, 87.969,  0.2056),
@@ -143,7 +143,7 @@ const planetAt = (planetStr, date) => {
   // Get planet's mean angle traversed by finding the product of planet's angular
   // speed and difference in days
   const angleTraversed = planet.angularSpeed * diff;
-  // Get the sum of planet's mean longitude and mean angle travsered. This will
+  // Get the sum of planet's mean longitude and mean angle traversed. This will
   // be the location of around the Sun in reference to reference date (`REF`).
   // The remainder of the sum divided by 360 degrees to ensure we have a value
   // equal to or less than 360 degrees (or the degrees in a sphere)
