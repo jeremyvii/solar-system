@@ -151,7 +151,6 @@ const planetAt = (planetStr, date) => {
 };
 
 Array.from(Object.keys(planets)).forEach(planet => {
-  // console.log(`heliopause: `);
   // console.log(planet + ': ' + planetAt(planet, (function() {
   //   const today = new Date();
   //   let dd = today.getDate();
