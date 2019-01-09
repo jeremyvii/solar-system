@@ -1,19 +1,19 @@
 /**
- * Date derived from work by Singal, Tanmay & Singal, Ashok. (2009). in 
- * `Determining planetary positions in the sky for ~50 years to an accuracy of 
+ * Date derived from work by Singal, Tanmay & Singal, Ashok. (2009). in
+ * `Determining planetary positions in the sky for ~50 years to an accuracy of
  * 1 degree with a calculator.`
- * 
+ *
  * @see        {@link: https://www.researchgate.net/publication/45878423_Determining_planetary_positions_in_the_sky_for_50_years_to_an_accuracy_of_1_degree_with_a_calculator}
  * @copyright  Jeremy Jackson 2018
  */
 
 /**
  * Convert date string to UTC date object.
- * 
+ *
  * Similar to strtotime() in other languages
- * 
+ *
  * @param   {string}  date  Date string to convert to JavaScript Date object
- * 
+ *
  * @return  {Date}          String converted to date object
  */
 const toUTC = (date) => {
@@ -24,13 +24,13 @@ const toUTC = (date) => {
 
 /**
  * Calculates difference between dates in days
- * 
- * Start date must be earlier than end date or the returned value will be an 
+ *
+ * Start date must be earlier than end date or the returned value will be an
  * arbitrary negative number
- * 
+ *
  * @param   {string}  start  Start date must be an earlier date than end date
  * @param   {string}  end    End date
- * 
+ *
  * @return  {number}         Difference in days between two dates
  */
 const dateDiff = (start, end) => {
@@ -39,9 +39,9 @@ const dateDiff = (start, end) => {
 
 /**
  * Converts astronomical units (`AU`) to kilometers
- * 
+ *
  * @param   {number}  au  AU to be converted to kilometers
- * 
+ *
  * @return  {number}      AU converted to kilometers
  */
 const auToKm = au => au * 149597870.7;
@@ -58,21 +58,21 @@ class Planet {
   constructor(meanLongitude, period, eccentricity) {
     /**
      * Location around the sun in degrees
-     * 
+     *
      * @type  {number}
      */
     this.meanLongitude = meanLongitude;
 
     /**
      * Orbital period in days
-     * 
+     *
      * @type  {number}
      */
     this.period = period;
 
     /**
      * Eccentricity of planets elipitical orbit
-     * 
+     *
      * @type  {number}
      */
     this.eccentricity = eccentricity;
@@ -80,7 +80,7 @@ class Planet {
 
   /**
    * Converts orbital period from days to years
-   * 
+   *
    * @return  {number}
    */
   get years() {
@@ -88,9 +88,9 @@ class Planet {
   }
 
   /**
-   * Gets astronomical units from orbital period using Kepler's third law of 
+   * Gets astronomical units from orbital period using Kepler's third law of
    * planetary motion (`P^2 = a^3`)
-   * 
+   *
    * @return  {number}
    */
   get au() {
@@ -99,7 +99,7 @@ class Planet {
 
   /**
    * Speed around in the sun (in degrees?)
-   * 
+   *
    * @type  {number}
    */
   get angularSpeed() {
@@ -123,29 +123,29 @@ const planets = {
 const REF = '1/1/2000';
 
 /**
- * Finds where planet is located in degrees in our the sphere around the sun, 
+ * Finds where planet is located in degrees in our the sphere around the sun,
  * in reference to `REF` constant
- * 
+ *
  * @param   {string}  planetStr  Name of planet to find location
- * @param   {string}  date       Date of planet's location in which return value 
- *                               is in reference too 
- * 
+ * @param   {string}  date       Date of planet's location in which return value
+ *                               is in reference too
+ *
  * @return  {number}             Where planet is around the sun in degrees
  */
 const planetAt = (planetStr, date) => {
   // Indicate if planet requested does not exist
-  if (!planets.hasOwnProperty(planetStr)) 
+  if (!planets.hasOwnProperty(planetStr))
     throw `Planet, ${planetAt}, does not exist`;
   // Find planet in based on name provided
   const planet = planets[planetStr];
   // Find difference in days between reference point on date requested
   const diff = dateDiff(REF, date);
-  // Get planet's mean angle traversed by finding the product of planet's angular 
+  // Get planet's mean angle traversed by finding the product of planet's angular
   // speed and difference in days
   const angleTraversed = planet.angularSpeed * diff;
-  // Get the sum of planet's mean longitude and mean angle travsered. This will 
+  // Get the sum of planet's mean longitude and mean angle travsered. This will
   // be the location of around the Sun in reference to reference date (`REF`).
-  // The remainder of the sum divided by 360 degrees to ensure we have a value 
+  // The remainder of the sum divided by 360 degrees to ensure we have a value
   // equal to or less than 360 degrees (or the degrees in a sphere)
   return (planet.meanLongitude + angleTraversed) % 360;
 };
