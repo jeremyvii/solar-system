@@ -4,76 +4,87 @@
 ///
 /// https://www.researchgate.net/publication/45878423_Determining_planetary_positions_in_the_sky_for_50_years_to_an_accuracy_of_1_degree_with_a_calculator
 
-use std::collections::HashMap;
+use std::result::Result;
+use std::vec::Vec;
+
+use structopt::StructOpt;
 
 extern crate chrono;
 
-use chrono::prelude::{DateTime, Utc, TimeZone};
+use chrono::prelude::{DateTime, NaiveDate, Utc};
 
-const YRS: f64 = 365.256;
+mod planet;
+pub use planet::Planet;
 
-struct Planet {
-  mean_longitude: f64,
-  period: f64,
-}
+#[derive(StructOpt)]
+/// Determine the position of a planet in our solar system by date for 50 years
+/// to an accuracy of 1 degree. If no date is provided, the current time (utc)
+/// will used.
+struct Cli {
+  /// Which planet to locate
+  #[structopt(short, long)]
+  planet: String,
 
-impl Planet {
-  pub fn new(mean_longitude: f64, period: f64) -> Planet {
-    Planet {
-      mean_longitude: mean_longitude,
-      period: period,
-    }
-  }
-
-  pub fn get_angular_speed(&self) -> f64 {
-    return 360.0 / self.period;
-  }
-
-  pub fn get_au(&self) -> f64 {
-    return self.get_years().powf(2.0).cbrt();
-  }
-
-  pub fn get_years(&self) -> f64 {
-    return self.period / YRS;
-  }
-
-  /// Determines the planets position at a given date
-  pub fn get_position_at_date(&self, date: DateTime<Utc>) -> f64 {
-    let timestamp = date.timestamp();
-
-    let ref_timestamp = Utc.ymd(2000, 1, 1).and_hms(0, 0, 0).timestamp();
-
-    let date_diff = (ref_timestamp - timestamp) / (24 * 60 * 60 * 1000);
-    let date_diff_float = date_diff as f64;
-
-    let angle_traversed = self.get_angular_speed() * date_diff_float;
-
-    return (self.mean_longitude * angle_traversed) % 360.0;
-  }
+  /// The epoch at which the planet's position will be determined
+  #[structopt(short, long, default_value = "now")]
+  date: String,
 }
 
 fn main() {
-  let mut planets = HashMap::new();
+  let args = Cli::from_args();
 
-  planets.insert("Mercury", Planet::new(250.2, 87.969));
-  planets.insert("Venus",   Planet::new(181.2, 224.701));
-  planets.insert("Earth",   Planet::new(100.0, 365.256));
-  planets.insert("Mars",    Planet::new(355.2, 686.98));
-  planets.insert("Jupiter", Planet::new(34.3,  4332.59));
-  planets.insert("Saturn",  Planet::new(50.1,  10759.2));
+  let planet_name = args.planet;
 
-  for planet_map in planets.into_iter() {
-    let name = planet_map.0;
-    let planet = planet_map.1;
+  let date = parse_date_str(args.date);
 
-    let date: DateTime<Utc> = Utc::now();
+  let planet = get_planet_by_name(planet_name).unwrap();
 
-    let position = planet.get_position_at_date(date);
+  let position = planet.get_position_at_date(date);
 
-    println!("Planet: {0}", name);
-    println!("Astronomical Units: {0}", planet.get_au());
-    println!("Years to orbit the sun: {0}", planet.get_years());
-    println!("Planet {0} is at {1}", name, position);
-    println!("================");
+  print_planet_data(planet, position);
+}
+
+/// Retrieve all planets in which the position is known at the reference date
+fn get_planets() -> Vec<Planet> {
+  let mut planets = Vec::new();
+
+  planets.push(Planet::new("Mercury".to_string(), 250.2,     87.969));
+  planets.push(Planet::new("Venus".to_string(),   181.2,     224.701));
+  planets.push(Planet::new("Earth".to_string(),   100.0,     365.256));
+  planets.push(Planet::new("Mars".to_string(),    355.2,     686.98));
+  planets.push(Planet::new("Jupiter".to_string(), 34.3,      4332.59));
+  planets.push(Planet::new("Saturn".to_string(),  50.1,      10759.2));
+  planets.push(Planet::new("Uranus".to_string(),  313.23218, 30687.15));
+  planets.push(Planet::new("Neptune".to_string(), 304.88003, 60190.03));
+
+  return planets;
+}
+
+/// Retrieve a planet by it's name
+fn get_planet_by_name(name: String) -> Result<Planet, &'static str> {
+  for planet in get_planets() {
+    if planet.name == name {
+      return Ok(planet);
+    }
   }
+
+  return Err("No planet found by that name.");
+}
+
+fn parse_date_str(date_str: String) -> DateTime<Utc> {
+  if date_str == "now" {
+    return Utc::now();
+  }
+
+  let naive_date = NaiveDate::parse_from_str(&date_str.to_string(), "%Y-%m-%d").expect("Unable to parse date");
+  let naive_datetime = naive_date.and_hms(0, 0, 0);
+
+  return DateTime::from_utc(naive_datetime, Utc);
+}
+
+fn print_planet_data(planet: Planet, position: f64) {
+  println!("Planet:\t\t\t{0}", planet.name);
+  println!("Astronomical Units:\t{0}", planet.get_au());
+  println!("Years to orbit the sun:\t{0}", planet.get_years());
+  println!("Planet {0} is at\t{1}", planet.name, position);
 }
