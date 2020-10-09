@@ -47,7 +47,7 @@ mod planet {
       return self.period / YRS;
     }
 
-    /// Determines the planets position, in degrees in a 2D plane, at a given date
+    /// Determines the planets position in degrees at a given date
     pub fn get_position_at_date(&self, date: DateTime<Utc>) -> f64 {
       let timestamp = date.timestamp();
 

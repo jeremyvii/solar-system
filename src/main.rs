@@ -21,11 +21,12 @@ pub use planet::Planet;
 /// to an accuracy of 1 degree. If no date is provided, the current time (utc)
 /// will used.
 struct Cli {
-  /// Which planet to locate
-  #[structopt(short, long)]
+  /// Which planet to locate. If all is selected, every planet will be printed.
+  #[structopt(short, long, default_value = "all")]
   planet: String,
 
-  /// The epoch at which the planet's position will be determined
+  /// The epoch at which the planet's position will be determined. If now is
+  /// selected the current date will be used
   #[structopt(short, long, default_value = "now")]
   date: String,
 }
@@ -35,16 +36,23 @@ fn main() {
 
   let planet_name = args.planet;
 
-  let date = parse_date_str(args.date);
+  let date = parse_date_str(args.date).expect("Failed to parse provided date");
 
-  let planet = get_planet_by_name(planet_name).unwrap();
+  if planet_name == "all" {
+    let planets = get_planets();
 
-  let position = planet.get_position_at_date(date);
+    for planet in planets {
+      print_planet_data(planet, date);
+      println!("================");
+    }
+  } else {
+    let planet = get_planet_by_name(planet_name).unwrap();
 
-  print_planet_data(planet, position);
+    print_planet_data(planet, date);
+  }
 }
 
-/// Retrieve all planets in which the position is known at the reference date
+/// Retrieve all planets within our solar system
 fn get_planets() -> Vec<Planet> {
   let mut planets = Vec::new();
 
@@ -71,20 +79,32 @@ fn get_planet_by_name(name: String) -> Result<Planet, &'static str> {
   return Err("No planet found by that name.");
 }
 
-fn parse_date_str(date_str: String) -> DateTime<Utc> {
+/// Attempts to parse the provided string into a `DateTime<Utc>` instance
+fn parse_date_str(date_str: String) -> Result<DateTime<Utc>, &'static str> {
   if date_str == "now" {
-    return Utc::now();
+    return Ok(Utc::now());
   }
 
-  let naive_date = NaiveDate::parse_from_str(&date_str.to_string(), "%Y-%m-%d").expect("Unable to parse date");
-  let naive_datetime = naive_date.and_hms(0, 0, 0);
+  let naive_date = NaiveDate::parse_from_str(&date_str.to_string(), "%Y-%m-%d");
 
-  return DateTime::from_utc(naive_datetime, Utc);
+  if naive_date.is_err() {
+    return Err("Failed to parse provided date.");
+  }
+
+  let naive_datetime = naive_date.unwrap().and_hms(0, 0, 0);
+
+  return Ok(DateTime::from_utc(naive_datetime, Utc));
 }
 
-fn print_planet_data(planet: Planet, position: f64) {
-  println!("Planet:\t\t\t{0}", planet.name);
-  println!("Astronomical Units:\t{0}", planet.get_au());
-  println!("Years to orbit the sun:\t{0}", planet.get_years());
-  println!("Planet {0} is at\t{1}", planet.name, position);
+/// Prints a planet's data
+///
+/// Prints a planet's name, astronomical units, orbital period in years, and
+/// position in degrees.
+fn print_planet_data(planet: Planet, date: DateTime<Utc>) {
+  let position = planet.get_position_at_date(date);
+
+  println!("Planet:\t\t\t\t{0}", planet.name);
+  println!("Astronomical Units:\t\t{0}", planet.get_au());
+  println!("Years to orbit the sun:\t\t{0}", planet.get_years());
+  println!("Planet {0} is located at:\t{1}", planet.name, position);
 }
