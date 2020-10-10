@@ -18,6 +18,7 @@ mod planet {
     /// The planet's orbital period
     pub period: f64,
 
+    /// The reference to compare the provided date to
     pub ref_date: DateTime<Utc>
   }
 
