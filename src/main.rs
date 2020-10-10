@@ -21,14 +21,14 @@ pub use planet::Planet;
 /// to an accuracy of 1 degree. If no date is provided, the current time (utc)
 /// will used.
 struct Cli {
-  /// Which planet to locate. If all is selected, every planet will be printed.
-  #[structopt(short, long, default_value = "all")]
-  planet: String,
-
   /// The epoch at which the planet's position will be determined. If now is
   /// selected the current date will be used
   #[structopt(short, long, default_value = "now")]
   date: String,
+
+  /// Which planet to locate. If all is selected, every planet will be printed.
+  #[structopt(short, long, default_value = "all")]
+  planet: String,
 }
 
 fn main() {
